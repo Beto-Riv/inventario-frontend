@@ -1,0 +1,96 @@
+<body class="container-flex"><!-- 
+    <header class="bg-dark text-white p-3">
+        <h1>Encabezado</h1>
+    </header>
+ -->
+    <div class="container-fluid flexible">
+        <div class="row container-cuerpo">
+            <main role="main" class="col-12 col-md-12 col-lg-9 row carousel-container">
+                <div >
+                    <div class="col">
+                        <ngb-carousel #carousel [interval]="5000" [pauseOnHover]="false" class="carousel-fade">
+                            <ng-template ngbSlide>
+                            <img class="carousel-img" src="assets/img/autenticacion/6.jpg" width="100%" alt="Second slide">
+                            </ng-template>
+                            <ng-template ngbSlide>
+                            <img class="carousel-img" src="assets/img/autenticacion/10.jpg" width="100%" alt="Third slide">
+                            </ng-template>
+                            <ng-template ngbSlide>
+                            <img class="carousel-img" src="assets/img/autenticacion/13.jpg" width="100%" alt="Fourth slide">
+                            </ng-template>
+                        </ngb-carousel>
+                    </div>
+                  </div>
+            </main>
+            <nav class="col-12 col-md-12 col-lg-3 d-md-block bg-light sidebar" style="align-content: center;">
+                <div class="formBx">
+                    <div class="logo-minem">
+                        <img src="https://yt3.googleusercontent.com/XtQdXRV4Jw_XzPSVonWcCz5iYUojnAhy7mcwYOy6c7teWiu5fKnkiu4X8n0ZrCNKDs_qAPLl0oA=s900-c-k-c0x00ffffff-no-rj" style="max-width: 85%" />
+                    </div>
+                    <div class="encabezado2">
+                    </div>
+                    <br>
+            
+                    <form [formGroup]="loginFormGroup" (ngSubmit)="submitLogin(loginFormGroup.value, btnSubmitLogin)">
+                        
+                        <div class="inputBx" >
+                            <input type="text" formControlName="dniCeFormControl" appDigitOnly [placeholder]="dniCePlaceHolder"
+                                class="form-control input-lg" maxlength="12" />
+                            <div *ngIf="dniCeFormControl.invalid && (dniCeFormControl.dirty || dniCeFormControl.touched)"
+                                class="text-danger">
+                                <small *ngIf="dniCeFormControl.errors?.required">El campo es obligatorio</small>
+                                <small *ngIf="dniCeFormControl.errors?.exactlength">El campo debe contener {{ dniCeLenght }}
+                                    dígitos</small>
+                            </div>
+                        </div>
+            
+                        <div class="inputBx" >
+                            <input type="password" formControlName="passwordFormControl" class="form-control input-lg"
+                                placeholder="Contraseña" />
+                            <div *ngIf="passwordFormControl.invalid && (passwordFormControl.dirty || passwordFormControl.touched)"
+                                class="text-danger">
+                                <small *ngIf="passwordFormControl.errors?.required">El campo es obligatorio</small>
+                                <small *ngIf="passwordFormControl.errors?.whitespace">El campo no debe contener espacios en
+                                    blanco al inicio ni al final</small>
+                            </div>
+                        </div>
+            
+                        <div *ngIf="messageError" class="text-danger" role="alert">
+                            {{ messageError }}
+                        </div>
+            
+                        <div class="inputBx">
+                            <button #btnSubmitLogin [disabled]="!loginFormGroup.valid" type="submit"
+                                class="btn btn-info btn-block btn-iniciar">
+                                Iniciar Sesión
+                            </button>
+                        </div>
+            
+                    </form>
+                    <div class="footer">
+                        <div>
+                            <a [href]="">Olvide mi contraseña</a>
+                        </div>
+                        <div>
+                            <a [href]="">Registrar una cuenta</a>
+                        </div>
+                    </div>
+            <br><br>
+                    <div class="adress">
+                        <div>Calle Plaza de Armas Sur Mza. A17 Lte. 1 , Sayán, Peru</div>
+                        <div>Teléfono (+511) 4111100, 5100300</div>
+                        <div>{{ 'webmaster@munisayan.gob.pe' }}</div>
+                        <div>Horario de atención de lunes-viernes de 8:30 am - 5:30 pm</div>
+                    </div>
+            
+                    
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <footer class="footer-carousel text-white mt-auto" style="height: 5%;">
+        <div>Copyright© Municipalidad Distrital de Sayan. Todos los derechos reservados</div>
+    </footer>
+</body>
+

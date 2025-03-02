@@ -1,0 +1,208 @@
+<div>
+  <h1 style="text-align: center">
+    <span class="fa fa-bank"> </span>
+    <span> Municipalidad Distrital de Sayán</span>
+  </h1>
+  <hr>
+  <h1 style="text-align: center">
+    <small class="hsmall">¡Bienvenido a la pagina oficial del almacén central de la Municipalidad Distrital de Sayán!
+    </small>
+  </h1>
+  <br />
+
+  <div class="d-flex flex-row align-items-center pb-4">
+    <!-- <input
+      type="text"
+      class="form-control inline"
+      [ngModel]="txtBuscarTupa"
+      (ngModelChange)="onChangeBuscarTupa($event)"
+      placeholder="Buscar por trámite"
+      style="width: 100%; text-transform: uppercase"
+    /> -->
+   
+    <hr />
+  </div>
+
+  <div class="dropdown-divider"></div>
+
+  <div class="row pb-4">
+        <div class="col-md-12 alert alert-info text-center" role="info">
+            <label style="font-size: large;">Aquí podrás realiza diferentes trabajos enfocados a la cadena de 
+              suministros del almacén central de la Municipalidad Distrital de Sayán.
+              </label>
+              <br>
+              <label style="font-size: large;">La herramienta SWGI, brindará un mejor flujo de registros, mayor 
+                funcionalidad y sobre todo permitirá una mejor interacción para el 
+                usuario; y así pueda realizar una gestión de inventario mas sencilla, 
+                efectiva y 100% amigable.</label>
+        </div>
+    </div> 
+
+  <div class="row justify-content-center">
+    <div *ngIf="mostrarUO" class="row" style="max-width: 900px">
+      <div
+        class="col-md-6 col-lg-4"
+        *ngFor="let item of listadoSectores"
+      >
+        <button
+          type="button"
+          class="btn thumbnail"
+          (click)="redirecToTupas(item)"
+          style="margin: auto; margin-bottom: 0.5rem; border:0px;"
+        >
+          <img [src]="item.urlImagen" [alt]="item.nombre" />
+          <b>{{item.nombre}}</b>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- <div class="py-2">
+    <div class="col-md-12 alert alert-info small" role="alert">
+      <h5 class="alert-heading">
+        <i class="fas fa-exclamation-circle"></i> Recuerde
+      </h5>
+      <ul class="mb-0" style="padding-inline-start: 5px; list-style-type: none">
+        <li>
+          Solo se muestran los Procedimientos Administrativos correspondientes a
+          su tipo de usuario.
+        </li>
+        <li>
+          Para el trámite en el TUPA Digital, el pago en el Banco de la Nación
+          debe realizarse con el documento del administrado:
+          <ul>
+            <li>Persona Jurídica con RUC de la empresa</li>
+            <li>Persona Natural con DNI</li>
+            <li>Persona Natural con el número de RUC</li>
+            <li>Persona Extranjera con el Nro de Carnet de Extranjería</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div> -->
+
+
+<ng-template #requisitos let-modal>
+  <div class="modal-header bg-danger text-white">
+    <h5 class="modal-title" id="modal-basic-title">
+      <i class="fas fa-list"></i> Listado de requisitos
+    </h5>
+    <button
+      type="button"
+      class="btn-close btn-close-white"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    >
+      
+    </button>
+  </div>
+  <div class="modal-body card bg-light p-4">
+    <!-- <div class="card bg-light"> -->
+    <div class="card-body py-2 small">
+      <h6 class="card-title text-danger">Datos del procedimiento</h6>
+      <hr class="border-danger opacity-75" />
+      <div class="row mb-2">
+        <div class="col-md-2 text-bold">Código TUPA:</div>
+        <div class="col-md-10">
+          {{ procedimientoSeleccionado?.codigo || "DETERMINADO" }}
+        </div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-md-2 text-bold">Descripción:</div>
+        <div class="col-md-10">
+          {{ procedimientoSeleccionado?.nombre || "DETERMINADO" }}
+        </div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-md-2 text-bold">Tipo Evaluación:</div>
+        <div class="col-md-10">
+          {{ tipoSolicitudSeleccionado?.tipoEvaluacion || "DETERMINADO" }}
+        </div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-md-2 text-bold">Plazo Atención:</div>
+        <div class="col-md-10">
+          {{
+            tipoSolicitudSeleccionado?.plazoAtencion > 0
+              ? tipoSolicitudSeleccionado.plazoAtencion + " DÍAS HÁBILES"
+              : "DETERMINADO"
+          }}
+        </div>
+      </div>
+
+      <br />
+
+      <h6 class="card-title text-danger">Requisitos</h6>
+      <hr class="border-danger opacity-75" />
+      <div class="row mt-3 align-items-center">
+        <div class="col-md-auto col-form-label text-bold">Tipo de Solicitud:</div>
+        <div class="col-md">
+          <select
+            class="form-select form-select-sm"
+            [(ngModel)]="tipoSolicitudModel"
+            data-container="body"
+            (ngModelChange)="onTipoSolicitudChange($event)"
+          >
+            <option
+              *ngFor="let item of listadoTipoSolicitud"
+              [value]="item.codigostr"
+            >
+              {{ item.descripcion }}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col-md-12">
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr class="align-self-center">
+                <th>Nro</th>
+                <th>Denominación del requisito</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="let item of listadoDetalleTupaFilter; index as indice"
+              >
+                <td class="align-middle text-center text-bold">
+                  {{ indice + 1 }}
+                </td>
+                <ng-container *ngIf="item.tieneCosto; else elseTemplate">
+                  <td class="align-middle requisito-desc">
+                    <quill-view
+                      [content]="item.descripcion"
+                      theme="snow"
+                      [sanitize]="true"
+                    ></quill-view>
+                    <div>
+                      <strong class="text-muted">
+                        Monto a Pagar: S/ {{ item.costoFormatted }}
+                      </strong>
+                    </div>
+                    <div class="badge text-bg-info" *ngIf="!!item.obligatorio">
+                      Requisito obligatorio
+                    </div>
+                  </td>
+                </ng-container>
+                <ng-template #elseTemplate>
+                  <td class="align-middle requisito-desc">
+                    <quill-view
+                      [content]="item.descripcion"
+                      theme="snow"
+                      [sanitize]="true"
+                    ></quill-view>
+                    <div class="badge text-bg-info" *ngIf="!!item.obligatorio">
+                      Requisito obligatorio
+                    </div>
+                  </td>
+                </ng-template>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- </div> -->
+  </div>
+</ng-template>
