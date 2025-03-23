@@ -1,21 +1,24 @@
 import { Component, OnInit } from '@angular/core';
 import { FuncionesMtcService } from 'src/app/core/services/funciones-mtc.service';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
-import { IngresoService } from 'src/app/core/services/inventario/ingreso.service';
-import { NuevoIngresoComponent } from 'src/app/modals/nuevo-ingreso/nuevo-ingreso.component';
-import { EliminarIngresoRequest } from 'src/app/core/models/Inventario/Ingreso';
+import { SalidaService } from 'src/app/core/services/inventario/salida.service';
+import { NuevaSalidaComponent } from 'src/app/modals/nueva-salida/nueva-salida.component';
+import { AreaSolicitanteResponse, EliminarSalidaRequest } from 'src/app/core/models/Inventario/Salida';
 import { AbstractControl, FormBuilder, FormGroup } from '@angular/forms';
 import * as XLSX from 'xlsx';
+
 @Component({
-  selector: 'app-registro-entrada',
-  templateUrl: './registro-entrada.component.html',
-  styleUrls: ['./registro-entrada.component.css']
+  selector: 'app-registro-salida',
+  templateUrl: './registro-salida.component.html',
+  styleUrls: ['./registro-salida.component.css']
 })
-export class RegistroEntradaComponent implements OnInit {
+export class RegistroSalidaComponent implements OnInit {
   form: FormGroup;
 
   listadoBandejaBase = [];
   listadoBandeja = [];
+  listaAreasSolicitantes: AreaSolicitanteResponse[] = [];
+
   BandejaSize = 1;
   page = 1;
   pageSize = 50;
@@ -24,22 +27,21 @@ export class RegistroEntradaComponent implements OnInit {
     private builder: FormBuilder,
     private modalService: NgbModal,
     private funcionesMtcService: FuncionesMtcService,
-    private ingresoService: IngresoService
+    private salidaService: SalidaService
   ) { }
 
   ngOnInit(): void {
     this.buildForm();
     this.cargarBandeja();
+    this.loadListas();
   }
 
   private buildForm(): void {
     this.form = this.builder.group({
       producto: [""],
-      material: [""],
-      color: [""],
-      tipo: [""],
+      idAreaSolicitante: [""],
+      personaSolicitante: [""],
       marca: [""],
-      talla:[""],
       fechaInicio: [""],
       fechaFin: [""],
     }, { validators: this.dateRangeValidator });
@@ -58,7 +60,7 @@ export class RegistroEntradaComponent implements OnInit {
   cargarBandeja() {
 
     this.funcionesMtcService.mostrarCargando();
-    this.ingresoService.getAll().subscribe(
+    this.salidaService.getAll().subscribe(
       (resp: any) => {
         this.funcionesMtcService.ocultarCargando();
         this.listadoBandejaBase = resp.data;
@@ -72,6 +74,12 @@ export class RegistroEntradaComponent implements OnInit {
     );
   }
 
+  private loadListas() {
+    this.salidaService.areasSolicitantes().subscribe(response => {
+      this.listaAreasSolicitantes = response.data as AreaSolicitanteResponse[];
+    });
+  }
+
   onAddRegister(item?: any) {
     const modalOptions: NgbModalOptions = {
       size: 'lg',
@@ -79,9 +87,9 @@ export class RegistroEntradaComponent implements OnInit {
       ariaLabelledBy: 'modal-basic-title'
     };
 
-    const modalRef = this.modalService.open(NuevoIngresoComponent, modalOptions);
-    modalRef.componentInstance.title = item ? "Editar Ingreso" : "Nuevo Ingreso";
-    modalRef.componentInstance.id = item?.idEntrada || 0;
+    const modalRef = this.modalService.open(NuevaSalidaComponent, modalOptions);
+    modalRef.componentInstance.title = item ? "Editar Salida" : "Nueva Salida";
+    modalRef.componentInstance.id = item?.idSalida || 0;
 
     modalRef.result.then(
       (result) => {
@@ -95,10 +103,10 @@ export class RegistroEntradaComponent implements OnInit {
   onDelete(item?: any) {
     this.funcionesMtcService.mensajeConfirmar(`¿Está seguro de eliminar el registro seleccionado? \n`)
       .then(() => {
-        let request: EliminarIngresoRequest = {
-          id: item.idEntrada
+        let request: EliminarSalidaRequest = {
+          id: item.idSalida
         }
-        this.ingresoService.eliminarIngreso(request).subscribe(
+        this.salidaService.eliminarSalida(request).subscribe(
           (resp: any) => {
             this.funcionesMtcService.mensajeOk("Se eliminó el registro seleccionado").then(() => this.cargarBandeja());
 
@@ -111,7 +119,7 @@ export class RegistroEntradaComponent implements OnInit {
   }
 
   onSearch(form: FormGroup) {
-    const { producto, material, color, talla, tipo, marca, fechaInicio, fechaFin } = form.value;
+    const { producto, idAreaSolicitante, personaSolicitante, marca, fechaInicio, fechaFin } = form.value;
 
     this.listadoBandeja = this.listadoBandejaBase.filter(item => {
       const itemFecha = new Date(item.fecha);
@@ -120,10 +128,8 @@ export class RegistroEntradaComponent implements OnInit {
 
       return (
         (!producto || item.nombre.toLowerCase().includes(producto.toLowerCase())) &&
-        (!material || item.material.toLowerCase().includes(material.toLowerCase())) &&
-        (!color || item.color.toLowerCase().includes(color.toLowerCase())) &&
-        (!talla || item.talla.toLowerCase().includes(talla.toLowerCase())) &&
-        (!tipo || item.tipo.toLowerCase().includes(tipo.toLowerCase())) &&
+        (!idAreaSolicitante || item.idAreaSolicitante == idAreaSolicitante) &&
+        (!personaSolicitante || item.personaSolicitante.toLowerCase().includes(personaSolicitante.toLowerCase())) &&
         (!marca || item.marca.toLowerCase().includes(marca.toLowerCase())) &&
         (!inicio || itemFecha >= inicio) &&
         (!fin || itemFecha <= fin)
@@ -145,31 +151,30 @@ export class RegistroEntradaComponent implements OnInit {
       item.registro = index + 1;
     });
     this.BandejaSize = this.listadoBandeja.length;
+    this.form.controls.estadoStock.setValue('');
+    this.form.controls.estadoVencimiento.setValue('');
   }
 
   downloadExcel() {
-    // const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.listadoBandeja);
-    // const wb: XLSX.WorkBook = XLSX.utils.book_new();
-    // XLSX.utils.book_append_sheet(wb, ws, 'Inventarios');
-
-    // XLSX.writeFile(wb, 'Inventarios.xlsx');
     // Crear una nueva hoja de cálculo
     const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet([
-      ["Municipalidad Distrital de Sayan"],
+      ["Municipalidad Distrital de Sayán"],
       ["Fecha del reporte: " + new Date().toLocaleDateString()],
       []
     ]);
 
     // Añadir los datos de la tabla
-    const headers = ["Nro.", "Fecha de registro", "Producto", 
-      "Material", "Color", "Talla", "Tipo", "Medidas", "Marca", "Unidad de Medida", "Cantidad", "F. Vencimiento"];
+    const headers = ["Nro.", "Fecha de registro", "Producto", "Área solicitante", "Persona solicitante", "Material", "Color",
+      "Talla", "Tipo", "Medidas", "Marca", "Unidad de Medida", "Cantidad"];
     XLSX.utils.sheet_add_aoa(ws, [headers], { origin: "A4" });
 
     this.listadoBandeja.forEach((item, index) => {
       const row = [
         item.registro,
-        item.fecha,
+        item.fecha ? new Date(item.fecha).toLocaleDateString() : '',
         item.nombre,
+        item.areaSolicitante,
+        item.personaSolicitante,
         item.material,
         item.color,
         item.talla,
@@ -177,35 +182,35 @@ export class RegistroEntradaComponent implements OnInit {
         item.medidas,
         item.marca,
         item.nombreUnidadMedida,
-        item.cantidad,
-        item.fechaVencimiento ? new Date(item.fechaVencimiento).toLocaleDateString() : ''
+        item.cantidad
       ];
       XLSX.utils.sheet_add_aoa(ws, [row], { origin: `A${index + 5}` });
     });
 
     // Ajustar el ancho de las columnas
     const wscols = [
-      { wch: 10 }, // Nro.
-      { wch: 20 }, // Producto
-      { wch: 20 }, // Producto
-      { wch: 20 }, // Material
-      { wch: 20 }, // Color
-      { wch: 10 }, // Talla
-      { wch: 20 }, // Tipo
-      { wch: 20 }, // Medidas
-      { wch: 20 }, // Marca
-      { wch: 20 }, // Unidad de Medida
-      { wch: 10 }, // Cantidad
-      { wch: 20 }, // F. Vencimiento
+      { wch: 10 },
+      { wch: 20 },
+      { wch: 20 },
+      { wch: 20 },
+      { wch: 10 },
+      { wch: 20 },
+      { wch: 20 },
+      { wch: 20 },
+      { wch: 20 },
+      { wch: 10 },
+      { wch: 20 },
+      { wch: 20 },
+      { wch: 20 }
     ];
     ws['!cols'] = wscols;
 
     // Crear un nuevo libro de trabajo
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'RegistroIngreso');
+    XLSX.utils.book_append_sheet(wb, ws, 'RegistroSalida');
 
     // Escribir el archivo
-    XLSX.writeFile(wb, 'RegistroIngresoInventario.xlsx');
+    XLSX.writeFile(wb, 'RegistroSalidaInventario.xlsx');
   }
 }
 

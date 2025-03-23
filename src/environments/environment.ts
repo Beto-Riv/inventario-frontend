@@ -23,8 +23,15 @@ export const environment = {
 
     listarIngreso: '/Ingreso/listar-ingreso',
     grabarIngreso: '/Ingreso/grabar-ingreso',
+    obtenerIngreso: '/Ingreso/obtener-ingreso',
+    eliminarIngreso: '/Ingreso/eliminar-ingreso',
 
 
+    listarSalida: '/Salida/listar-salida',
+    grabarSalida: '/Salida/grabar-salida',
+    obtenerSalida: '/Salida/obtener-salida',
+    eliminarSalida: '/Salida/eliminar-salida',
+    areasSolicitantes: '/Salida/area-solicitante',
 
     anexo: '/Anexo',
     anexoTramite: '/Anexo/tramite',
@@ -49,9 +56,11 @@ export const environment = {
     autenticacion: {
       autenticacion: '/Autenticacion/jwt',
       login: '/Autenticacion/login',
-      registrar: '/Autenticacion/registrar',
-      logout: '/Autenticacion/logout',
-      recuperarpass: '/Autenticacion/recuperarpass',
+      registrar: '/Autenticacion/registro',
+      recuperarpass: '/Autenticacion/olvide-pass',
+
+
+      logout: '/Autenticacion/logout',      
       cambiarpass: '/Autenticacion/cambiarpass',
       actualizar: '/Autenticacion/actualizar',
       loginsunat: '/Autenticacion/loginsunat',

@@ -41,6 +41,8 @@ import { QuillModule } from 'ngx-quill';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { MisInventariosComponent } from './pages/core/components/mis-inventarios/mis-inventarios.component';
 import { RegistroEntradaComponent } from './pages/core/components/registro-entrada/registro-entrada.component';
+import { RegistroSalidaComponent } from './pages/core/components/registro-salida/registro-salida.component';
+import { ReporteInventarioComponent } from './pages/core/components/reporte-inventario/reporte-inventario.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +52,9 @@ import { RegistroEntradaComponent } from './pages/core/components/registro-entra
     IndexComponent,
     InicioComponent,
     MisInventariosComponent,
-    RegistroEntradaComponent
+    RegistroEntradaComponent,
+    RegistroSalidaComponent,
+    ReporteInventarioComponent
   ],
   imports: [
     NgSelectModule,

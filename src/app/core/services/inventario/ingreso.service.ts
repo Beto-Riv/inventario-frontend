@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { ApiResponse } from '../../models/api-response';
 import { EliminarProductoRequest, ProductosRequest, UnidadMedidaResponse } from '../../models/Inventario/Producto';
-import { IngresoRequest } from '../../models/Inventario/Ingreso';
+import { EliminarIngresoRequest, IngresoRequest } from '../../models/Inventario/Ingreso';
 
 @Injectable({
   providedIn: 'root'
@@ -21,8 +21,8 @@ export class IngresoService {
   constructor(private httpClient: HttpClient) {
     this.urlListarIngreso = `${environment.baseUrlAPI}${environment.endPoint.listarIngreso}`;
     this.urlGrabarIngreso = `${environment.baseUrlAPI}${environment.endPoint.grabarIngreso}`;
-    // this.urlObtenerIngreso = `${environment.baseUrlAPI}${environment.endPoint.obtenerProducto}`;
-    // this.urlEliminarIngreso = `${environment.baseUrlAPI}${environment.endPoint.eliminarProducto}`;
+    this.urlObtenerIngreso = `${environment.baseUrlAPI}${environment.endPoint.obtenerIngreso}`;
+    this.urlEliminarIngreso = `${environment.baseUrlAPI}${environment.endPoint.eliminarIngreso}`;
   }
 
   getAll<T>(): Observable<ApiResponse<T>> {
@@ -37,15 +37,15 @@ export class IngresoService {
     return this.httpClient.post<ApiResponse<T>>(`${this.urlGrabarIngreso}`, data);
   }
 
-  // obtenerProducto<T>(id: number): Observable<ApiResponse<T>> {
-  //   return this.httpClient.get<ApiResponse<T>>(`${this.urlObtenerProducto}`,{
-  //     params: { id: id.toString() }
-  //   });
-  // }
+  obtenerIngreso<T>(id: number): Observable<ApiResponse<T>> {
+    return this.httpClient.get<ApiResponse<T>>(`${this.urlObtenerIngreso}`,{
+      params: { id: id.toString() }
+    });
+  }
 
-  // eliminarProducto<T>(data: EliminarProductoRequest): Observable<ApiResponse<T>> {
-  //   debugger;
-  //   return this.httpClient.post<ApiResponse<T>>(`${this.urlEliminarProducto}`, data);
-  // }
+  eliminarIngreso<T>(data: EliminarIngresoRequest): Observable<ApiResponse<T>> {
+    debugger;
+    return this.httpClient.post<ApiResponse<T>>(`${this.urlEliminarIngreso}`, data);
+  }
 
 }

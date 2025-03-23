@@ -6,6 +6,8 @@ import { SeguridadComponent } from './components/seguridad/seguridad.component';
 import { TramiteIniciadoComponent } from './components/tramite-iniciado/tramite-iniciado.component';
 import { MisInventariosComponent } from './components/mis-inventarios/mis-inventarios.component';
 import { RegistroEntradaComponent } from './components/registro-entrada/registro-entrada.component';
+import { RegistroSalidaComponent } from './components/registro-salida/registro-salida.component';
+import { ReporteInventarioComponent } from './components/reporte-inventario/reporte-inventario.component';
 
 const routes: Routes = [
   {
@@ -28,13 +30,13 @@ const routes: Routes = [
   },
   {
     path: 'registro-salida',
-    component: TramiteIniciadoComponent,
+    component: RegistroSalidaComponent,
     canLoad: [AuthGuard],
     canActivate: [AuthGuard],
   },
   {
-    path: 'mis-estadisticas',
-    component: TramiteIniciadoComponent,
+    path: 'reporte-inventario',
+    component: ReporteInventarioComponent,
     canLoad: [AuthGuard],
     canActivate: [AuthGuard],
   },

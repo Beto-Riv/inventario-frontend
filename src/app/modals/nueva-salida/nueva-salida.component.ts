@@ -6,27 +6,29 @@ import { ProductosRequest, UnidadMedidaResponse } from 'src/app/core/models/Inve
 import { InventarioService } from 'src/app/core/services/inventario/inventario.service';
 import { IngresoService } from 'src/app/core/services/inventario/ingreso.service';
 import { IngresoRequest } from 'src/app/core/models/Inventario/Ingreso';
+import { AreaSolicitanteResponse, SalidaRequest } from 'src/app/core/models/Inventario/Salida';
+import { SalidaService } from 'src/app/core/services/inventario/salida.service';
 
 @Component({
-  selector: 'app-nuevo-ingreso',
-  templateUrl: './nuevo-ingreso.component.html',
-  styleUrl: './nuevo-ingreso.component.scss'
+  selector: 'app-nueva-salida',
+  templateUrl: './nueva-salida.component.html',
+  styleUrl: './nueva-salida.component.scss'
 })
-export class NuevoIngresoComponent implements OnInit {
+export class NuevaSalidaComponent implements OnInit {
   form: FormGroup;
   activeModal = inject(NgbActiveModal);
   @Input() title!: string;
   @Input() id: number;
 
-  listaUnidadMedida: UnidadMedidaResponse[] = [];
+  listaAreasSolicitantes: AreaSolicitanteResponse[] = [];
   data: ProductosRequest;
   allProducts: any[] = [];
   filteredOptions: any[] = [];
-
+  
   constructor(private builder: FormBuilder,
     private inventarioService: InventarioService,
     private funcionesMtcService: FuncionesMtcService,
-    private ingresoService: IngresoService
+    private salidaService: SalidaService
   ) { }
 
   ngOnInit(): void {
@@ -47,7 +49,9 @@ export class NuevoIngresoComponent implements OnInit {
     this.form = this.builder.group({
       nombre: ["", Validators.required],
       idProducto: [""],
-      cantidad: ["", Validators.required]
+      cantidad: ["", Validators.required],
+      idAreaSolicitante: [""],
+      personaSolicitante: [""],
     });
   }
 
@@ -77,7 +81,7 @@ export class NuevoIngresoComponent implements OnInit {
 
   private getData(): void {
 
-    this.ingresoService.obtenerIngreso(this.id).subscribe(
+    this.salidaService.obtenerSalida(this.id).subscribe(
       (resp: any) => {
         this.funcionesMtcService.ocultarCargando();
         this.data = resp.data;
@@ -85,12 +89,7 @@ export class NuevoIngresoComponent implements OnInit {
 
         let option = {
           idProducto: this.data.idProducto,
-          nombre: this.allProducts.find(x=>x.idProducto === this.data.idProducto)?.nombre,
-          descripcion: this.allProducts.find(x => x.idProducto === this.data.idProducto)?.descripcion,
-          talla: this.allProducts.find(x => x.idProducto === this.data.idProducto)?.talla,
-          material: this.allProducts.find(x=>x.idProducto === this.data.idProducto)?.material,
-          color: this.allProducts.find(x=>x.idProducto === this.data.idProducto)?.color,
-
+          nombre: this.allProducts.find(x=>x.idProducto === this.data.idProducto)?.nombre
         }
         this.onOptionSelected(option);
 
@@ -108,14 +107,16 @@ export class NuevoIngresoComponent implements OnInit {
       return;
     }
     
-    const datos: IngresoRequest = {
-      idEntrada: this.id,
+    const datos: SalidaRequest = {
+      idSalida: this.id,
       idProducto: this.form.get('idProducto').value,
       cantidad: this.form.get('cantidad').value,
-      fecha: null
+      fecha: null,
+      idAreaSolicitante: this.form.get('idAreaSolicitante').value,
+      personaSolicitante: this.form.get('personaSolicitante').value,
     }
 
-    this.ingresoService.postGrabarIngreso(datos).subscribe(
+    this.salidaService.postGrabarSalida(datos).subscribe(
       (resp: any) => {
         this.funcionesMtcService.ocultarCargando();
       if (resp.success)
@@ -137,15 +138,14 @@ export class NuevoIngresoComponent implements OnInit {
   }
 
   private loadListas() {
-    this.inventarioService.getUnidadesMedida().subscribe(response => {
-      this.listaUnidadMedida = response.data;
+    this.salidaService.areasSolicitantes().subscribe(response => {
+      this.listaAreasSolicitantes = response.data as AreaSolicitanteResponse[];
     });
   }
 
   onNombreInput(event: any): void {
     const value = event.target.value.toLowerCase();
     this.filteredOptions = this.allProducts.filter(option => option.nombre.toLowerCase().includes(value));
-    debugger;
   }
 
   onOptionSelected(option: any): void {

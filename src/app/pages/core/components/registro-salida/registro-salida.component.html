@@ -1,9 +1,10 @@
 <div class="card mb-5 shadow">
     <div class="card-header py-3">
-        Registro de entradas
+        Registro de salidas
     </div>
     <form (submit)="onSearch(form)" [formGroup]="form">
         <div class="card-body p-4 small">
+
             <div class="mb-2">
                 <div class="col-sm-12 col-md-12 mt-2">
                     <div class="row">
@@ -13,34 +14,26 @@
                         </div>
 
                         <div class="col-sm-4 col-md-4 mt-2">
-                            <span class="text-bold">MATERIAL:</span>
-                            <input type="text" class="form-control" formControlName="material">
+                            <span class="text-bold">ÁREA SOLICITANTE:</span>
+                            <select class="form-select" formControlName="idAreaSolicitante">
+                                <option selected value="" [disabled]="true">--SELECCIONE--</option>
+                                <option *ngFor="let item of listaAreasSolicitantes" [value]="item.id">{{ item.nombre }}
+                                </option>
+                            </select>
                         </div>
 
                         <div class="col-sm-4 col-md-4 mt-2">
-                            <span class="text-bold">COLOR:</span>
-                            <input type="text" class="form-control" formControlName="color">
+                            <span class="text-bold">PERSONA SOLICITANTE:</span>
+                            <input type="text" class="form-control" formControlName="personaSolicitante">
                         </div>
                     </div>
 
                     <div class="row">
-                        <div class="col-sm-4 col-md-4 mt-2">
-                            <span class="text-bold">TALLA:</span>
-                            <input type="text" class="form-control" formControlName="talla">
-                        </div>
-
-                        <div class="col-sm-4 col-md-4 mt-2">
-                            <span class="text-bold">TIPO:</span>
-                            <input type="text" class="form-control" formControlName="tipo">
-                        </div>
-
                         <div class="col-sm-4 col-md-4 mt-2">
                             <span class="text-bold">MARCA:</span>
                             <input type="text" class="form-control" formControlName="marca">
                         </div>
-                    </div>
 
-                    <div class="row">
                         <div class="col-sm-4 col-md-4 mt-2">
                             <span class="text-bold">FECHA INICIO:</span>
                             <input type="date" class="form-control" formControlName="fechaInicio">
@@ -50,13 +43,12 @@
                             <span class="text-bold">FECHA FIN:</span>
                             <input type="date" class="form-control" formControlName="fechaFin">
                         </div>
-
-                        <div *ngIf="form.errors?.dateRangeInvalid" class="row">
-                            <div class="col-12 mt-2">
-                                <div class="alert alert-danger" role="alert">
-                                    Si selecciona una fecha de inicio, también debe seleccionar una fecha de fin y
-                                    viceversa.
-                                </div>
+                    </div>
+                    <div *ngIf="form.errors?.dateRangeInvalid" class="row">
+                        <div class="col-12 mt-2">
+                            <div class="alert alert-danger" role="alert">
+                                Si selecciona una fecha de inicio, también debe seleccionar una fecha de fin y
+                                viceversa.
                             </div>
                         </div>
                     </div>
@@ -74,18 +66,8 @@
                             </button>
                         </div>
                     </div>
-                    <!-- <div class="col-sm-auto ms-auto" style="text-align: right;">
+                    <div class="col-sm-auto ms-auto" style="text-align: right;">
                         <button type="button" class="btn btn-primary" (click)="onAddRegister(null)">
-                            <i class="fas fa-plus"></i> Nuevo
-                        </button>
-                        
-                    </div> -->
-                </div>
-
-
-                <div class="mb-3 align-items-center row gx-2">
-                    <div class="col-sm-auto ms-auto">
-                        <button class="btn btn-primary" (click)="onAddRegister()">
                             <i class="fas fa-plus"></i> Nuevo
                         </button>
                         <button type="button" class="btn btn-success ms-2" (click)="downloadExcel()">
@@ -102,6 +84,8 @@
                             <th class="align-middle text-center">Nro.</th>
                             <th class="align-middle">Fecha</th>
                             <th class="align-middle text-nowrap">Producto</th>
+                            <th class="align-middle">Área solicitante</th>
+                            <th class="align-middle">Persona Solicitante</th>
                             <th class="align-middle">Material</th>
                             <th class="align-middle">Color</th>
                             <th class="align-middle">Talla</th>
@@ -118,13 +102,15 @@
                         <tr
                             *ngFor="let item of listadoBandeja  | slice : (page-1) * pageSize : (page-1) * pageSize + pageSize ">
                             <td class="align-middle text-center text-bold">{{ item.registro }}</td>
-                            <td class="align-middle text-center">{{ item.fecha | date:'dd/MM/yyyy'}}</td>
+                            <td class="align-middle text-center">{{ item.fecha | date:'dd/MM/yyyy HH:mm'}}</td>
                             <td class="align-middle text-center">{{ item.nombre }}</td>
+                            <td class="align-middle text-center">{{ item.areaSolicitante }}</td>
+                            <td class="align-middle text-center">{{ item.personaSolicitante }}</td>
                             <td class="align-middle text-center">{{ item.material }}</td>
-                            <td class="align-middle text-center">{{ item.color }}</td>
-                            <td class="align-middle text-center">{{ item.talla }}</td>
-                            <td class="align-middle text-center">{{ item.tipo }}</td>
-                            <td class="align-middle text-center">{{ item.medidas }}</td>
+                        <td class="align-middle text-center">{{ item.color }}</td>
+                        <td class="align-middle text-center">{{ item.talla }}</td>
+                        <td class="align-middle text-center">{{ item.tipo }}</td>
+                        <td class="align-middle text-center">{{ item.medidas }}</td>
                             <td class="align-middle text-center">{{ item.marca }}</td>
                             <td class="align-middle text-center">{{ item.nombreUnidadMedida }}</td>
                             <td class="align-middle text-center">{{ item.cantidad }}</td>
@@ -137,7 +123,7 @@
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                         </tr>
-                        <tr *ngIf="listadoBandeja?.length === 0">
+                        <tr *ngIf="listadoBandeja.length === 0">
                             <td [attr.colspan]="14" style="text-align: center;">
                                 <span class="text-bold">Sin información registrada.</span>
                             </td>
@@ -158,11 +144,11 @@
                 </ngb-pagination>
 
                 <!-- <select class="form-select" style="width: auto" [(ngModel)]="pageSize">
-                    <option [ngValue]="5">5 registros</option>
-                    <option [ngValue]="25">25 registros</option>
-                    <option [ngValue]="50">50 registros</option>
-                    <option [ngValue]="100">100 registros</option>
-                </select> -->
+                <option [ngValue]="5">5 registros</option>
+                <option [ngValue]="25">25 registros</option>
+                <option [ngValue]="50">50 registros</option>
+                <option [ngValue]="100">100 registros</option>
+            </select> -->
             </div>
 
         </div>

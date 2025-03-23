@@ -34,14 +34,14 @@ export class NuevoProductoComponent implements OnInit {
   private buildForm(): void {
     this.form = this.builder.group({
       nombre: ["", Validators.required],
-      material: ["", Validators.required],
-      color: ["", Validators.required],
-      talla: ["", Validators.required],
-      tipo: ["", Validators.required],
-      medida: ["", Validators.required],
-      marca: ["", Validators.required],
+      material: [""],
+      color: [""],
+      talla: [""],
+      tipo: [""],
+      medida: [""],
+      marca: [""],
       idUnidadMedida: ["", Validators.required],
-      fechaVencimiento: ["", Validators.required],
+      fechaVencimiento: [""],
       stockInicial: [0, Validators.required],
       stockMinimo: [0, Validators.required],
     });
@@ -49,15 +49,6 @@ export class NuevoProductoComponent implements OnInit {
 
   //#region Validaciones
 
-  get tipo() {
-    return this.form.get('tipo') as FormControl;
-  }
-
-  get tipoErrors() {
-    return (this.tipo.touched || this.tipo.dirty) && this.tipo.hasError('required')
-      ? 'Obligatorio'
-      : '';
-  }
 
   get nombre() {
     return this.form.get('nombre') as FormControl;
@@ -69,55 +60,6 @@ export class NuevoProductoComponent implements OnInit {
       : '';
   }
 
-  get material() {
-    return this.form.get('material') as FormControl;
-  }
-
-  get materialErrors() {
-    return (this.material.touched || this.material.dirty) && this.material.hasError('required')
-      ? 'Obligatorio'
-      : '';
-  }
-
-  get color() {
-    return this.form.get('color') as FormControl;
-  }
-
-  get colorErrors() {
-    return (this.color.touched || this.color.dirty) && this.color.hasError('required')
-      ? 'Obligatorio'
-      : '';
-  }
-
-  get talla() {
-    return this.form.get('talla') as FormControl;
-  }
-
-  get tallaErrors() {
-    return (this.talla.touched || this.talla.dirty) && this.talla.hasError('required')
-      ? 'Obligatorio'
-      : '';
-  }
-
-  get medida() {
-    return this.form.get('medida') as FormControl;
-  }
-
-  get medidaErrors() {
-    return (this.medida.touched || this.medida.dirty) && this.medida.hasError('required')
-      ? 'Obligatorio'
-      : '';
-  }
-
-  get marca() {
-    return this.form.get('marca') as FormControl;
-  }
-
-  get marcaErrors() {
-    return (this.marca.touched || this.marca.dirty) && this.marca.hasError('required')
-      ? 'Obligatorio'
-      : '';
-  }
 
   get idUnidadMedida() {
     return this.form.get('idUnidadMedida') as FormControl;
@@ -149,15 +91,6 @@ export class NuevoProductoComponent implements OnInit {
       : '';
   }
 
-  get fechaVencimiento() {
-    return this.form.get('fechaVencimiento') as FormControl;
-  }
-
-  get fechaVencimientoErrors() {
-    return (this.fechaVencimiento.touched || this.fechaVencimiento.dirty) && this.fechaVencimiento.hasError('required')
-      ? 'Obligatorio'
-      : '';
-  }
   //#endregion
 
   private getData(): void {
@@ -167,7 +100,10 @@ export class NuevoProductoComponent implements OnInit {
         this.funcionesMtcService.ocultarCargando();
         this.data = resp.data;
         this.form.patchValue(this.data);
-
+        if (this.data.fechaVencimiento) {
+          const fecha = new Date(this.data.fechaVencimiento);
+          this.data.fechaVencimiento = new Date(fecha.toISOString().substring(0, 10));
+        }
         setTimeout(() => {
           this.form.patchValue({ idUnidadMedida: this.data.idUnidadMedida });
         }, 1000);
@@ -184,7 +120,7 @@ export class NuevoProductoComponent implements OnInit {
       this.funcionesMtcService.mensajeWarn('Complete los campos requeridos');
       return;
     }
-debugger;
+
     const datos: ProductosRequest = {
       idProducto: this.id,
       nombre: this.form.get('nombre').value,
@@ -195,7 +131,7 @@ debugger;
       medida: this.form.get('medida').value,
       marca: this.form.get('marca').value,
       idUnidadMedida: this.form.get('idUnidadMedida').value,
-      fechaVencimiento: this.form.get('fechaVencimiento').value,
+      fechaVencimiento: this.form.get('fechaVencimiento').value === "" ? null : this.form.get('fechaVencimiento').value,
       stockInicial: this.form.get('stockInicial').value,
       stockMinimo: this.form.get('stockMinimo').value,
     }
@@ -220,14 +156,13 @@ debugger;
 
 
   closeDialog() {
-    //this.activeModal.dismiss();
-    window.location.reload();
+    this.activeModal.close();
+    //window.location.reload();
   }
 
   private loadListas() {
     this.inventarioService.getUnidadesMedida().subscribe(response => {
       this.listaUnidadMedida = response.data;
-      debugger;
     });
   }
 
