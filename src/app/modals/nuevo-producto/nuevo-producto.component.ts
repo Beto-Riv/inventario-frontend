@@ -18,11 +18,14 @@ export class NuevoProductoComponent implements OnInit {
 
   listaUnidadMedida: UnidadMedidaResponse[] = [];
   data: ProductosRequest;
+  esEditable: boolean = false;
 
   constructor(private builder: FormBuilder,
     private inventarioService: InventarioService,
     private funcionesMtcService: FuncionesMtcService,
-  ) { }
+  ) { 
+    debugger;
+  }
 
   ngOnInit(): void {
     this.buildForm();
@@ -42,7 +45,7 @@ export class NuevoProductoComponent implements OnInit {
       marca: [""],
       idUnidadMedida: ["", Validators.required],
       fechaVencimiento: [""],
-      stockInicial: [0, Validators.required],
+      stockInicial: [{ value: 0, disabled: this.id > 0 }, [Validators.required, Validators.min(0)]],
       stockMinimo: [0, Validators.required],
     });
   }
@@ -98,8 +101,21 @@ export class NuevoProductoComponent implements OnInit {
     this.inventarioService.obtenerProducto(this.id).subscribe(
       (resp: any) => {
         this.funcionesMtcService.ocultarCargando();
+        if(this.id > 0)this.esEditable = true;
         this.data = resp.data;
-        this.form.patchValue(this.data);
+        this.form.patchValue({
+          nombre: this.data.nombre,
+          material: this.data.material,
+          color: this.data.color,
+          talla: this.data.talla,
+          tipo: this.data.tipo,
+          medida: this.data.medida,
+          marca: this.data.marca,
+          idUnidadMedida: this.data.idUnidadMedida,
+          stockInicial: this.data.stockInicial,
+          stockMinimo: this.data.stockMinimo,
+          fechaVencimiento: this.data.fechaVencimiento ? new Date(this.data.fechaVencimiento).toISOString().substring(0, 10) : ''
+        });
         if (this.data.fechaVencimiento) {
           const fecha = new Date(this.data.fechaVencimiento);
           this.data.fechaVencimiento = new Date(fecha.toISOString().substring(0, 10));
