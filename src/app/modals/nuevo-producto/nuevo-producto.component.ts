@@ -23,9 +23,7 @@ export class NuevoProductoComponent implements OnInit {
   constructor(private builder: FormBuilder,
     private inventarioService: InventarioService,
     private funcionesMtcService: FuncionesMtcService,
-  ) { 
-    debugger;
-  }
+  ) { }
 
   ngOnInit(): void {
     this.buildForm();
@@ -150,6 +148,7 @@ export class NuevoProductoComponent implements OnInit {
       fechaVencimiento: this.form.get('fechaVencimiento').value === "" ? null : this.form.get('fechaVencimiento').value,
       stockInicial: this.form.get('stockInicial').value,
       stockMinimo: this.form.get('stockMinimo').value,
+      fecha: new Date(),
     }
 
     this.inventarioService.postGrabarProducto(datos).subscribe(
